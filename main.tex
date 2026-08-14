@@ -1,0 +1,312 @@
+\documentclass{article}
+
+\usepackage{iclr2027_conference,times}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs,microtype,url,xcolor}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prb}{\mathbb P}
+\newcommand{\R}{\mathbb R}
+\newcommand{\risk}{\mathcal L}
+\newcommand{\cclass}{\mathcal C}
+\newcommand{\indep}{\alpha}
+\newcommand{\gprof}{\Gamma}
+\newcommand{\phase}{\Psi}
+\DeclareMathOperator{\KL}{KL}
+
+\title{The Statistical Price of Direction in Learning Conditional Averages}
+\author{\textbf{Pahan Dewasurendra} \\ Johns Hopkins University}
+
+\hypersetup{pdftitle={The Statistical Price of Direction in Learning Conditional Averages},pdfauthor={Pahan Dewasurendra},pdfkeywords={statistical, price, direction, learning, conditional, averages, asks, average, binary},pdfsubject={preprint}}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Learning conditional averages asks for the average binary label in the neighborhood of every test point. A recent combinatorial characterization proves learnability on arbitrary directed neighborhood graphs, but its quantitative lower and upper bounds differ by logarithmic factors. We determine the exact minimax rates and expose an unexpected critical phenomenon. Let $d$ be the largest shattered independent set and let $k$ be the largest bichromatic independent set, the two parameters in the characterization. Under the power loss $|\widehat s-s|^p$ and any fixed confidence, the optimal sample complexity on directed graphs is
+\[
+\Theta_p\!\left(\frac d\varepsilon+
+\begin{cases}
+k\varepsilon^{-2/p},&0<p<2,\\
+k\varepsilon^{-1}\log(1/\varepsilon),&p=2,\\
+k\varepsilon^{-1},&p>2.
+\end{cases}\right).
+\]
+On undirected graphs the logarithm at $p=2$ disappears, while every other graph-class minimax rate is unchanged. Thus square loss is the unique exponent at which direction changes the worst-case order characterized by $(d,k)$. The upper bounds follow from a sharp occupancy functional. Directed light-neighborhood inequalities produce a harmonic sum only at the critical exponent, while a weighted Caro--Wei argument collapses all scales in the undirected case. For the converse, a fixed countable transitive tournament with geometrically weighted opposite-label pairs carries one hard parameter at every resolvable scale. Each scale contributes order $1/m$ squared risk even though the graph has independence number one. Disjoint unions give the full $k\log(m/k)/m$ lower bound. The construction uses a known singleton concept, so the logarithm is caused entirely by estimating the marginal distribution. The results close the quantitative gap for square loss and give a complete loss-dependent phase diagram for conditional-average learning.
+\end{abstract}
+
+\section{Introduction}
+
+Many learning systems report an aggregate rather than an individual prediction. A local explanation such as an anchor may state the fraction of nearby instances receiving a positive decision \citep{ribeiro2018anchors}. A fairness audit may estimate a positive-decision rate inside each overlapping subgroup. A recommender may summarize users matching a partially observed profile. In each case the target at $x$ is a conditional average over a neighborhood $N[x]$ whose probability under the data distribution can vary drastically with $x$.
+
+\citet{bressan2026conditional} recently formalized this task as learning conditional averages. Instances form a directed graph $G$. Given binary labels $c(x)$ from a concept class $\cclass$ and examples from an unknown distribution $D$, the learner predicts
+\begin{equation}
+s_{D,c}(x)=\E_{X'\sim D}[c(X')\mid X'\in N[x]]. \label{eq:target}
+\end{equation}
+The framework contains ordinary realizable PAC learning when every neighborhood is a singleton. It also captures constant local-explanation auditing, which is connected to the distribution-sensitive faithfulness questions studied by \citet{dasgupta2022faithfulness} and \citet{bhattacharjee2024auditing}.
+
+Two joint parameters characterize learnability. The parameter $\alpha_1(G,\cclass)$ is the largest independent set shattered by $\cclass$. The parameter $\alpha_2(G,\cclass)$ is the largest independent set whose vertices all have an opposite-label out-neighbor under one concept. Finiteness of both is necessary and sufficient. Quantitatively, for square loss the known fixed-confidence bounds are
+\begin{equation}
+\Omega\!\left(\frac{\alpha_1+\alpha_2/\log\alpha_2}{\varepsilon}\right)
+\quad\text{and}\quad
+O\!\left(\frac{\alpha_1+\alpha_2\log(1/\varepsilon)}{\varepsilon}\right). \label{eq:oldgap}
+\end{equation}
+This leaves even the role of the logarithm unresolved. Is dyadic peeling in the upper bound loose, or can many neighborhood scales be simultaneously hard?
+
+The same work notes that its learner can be adapted to absolute loss by replacing the local mean-estimation lemma. It does not derive sharp $\alpha_2$ dependence for general losses, matching lower bounds, or a directed-versus-undirected comparison. Those questions cannot be answered by a mechanical change of the pointwise moment, because the moment must then be integrated over all neighborhood masses. This integration is where the critical exponent and orientation gap arise.
+
+We show that the answer depends on direction and, more surprisingly, on the loss exponent. Write $d=\alpha_1$ and $k=\alpha_2$. For $p>0$, evaluate a predictor $h:X\to[0,1]$ by
+\[
+\risk_{p,D,c}(h)=\E_{X\sim D}|h(X)-s_{D,c}(X)|^p.
+\]
+Table~\ref{tab:phase} gives the neighborhood part of the exact minimax risk after $m$ samples. The independent classification contribution is $d/m$ in every cell. We write $z=k/m\leq1$ and suppress constants depending only on $p$.
+
+\begin{table}[t]
+\centering
+\caption{Exact neighborhood minimax risk. All expressions are capped at one. Direction changes the order only for square loss.}
+\label{tab:phase}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+graph & $0<p<2$ & $p=2$ & $p>2$ \\
+\midrule
+directed & $z^{p/2}$ & $z\{1+\log(1/z)\}$ & $z$ \\
+undirected & $z^{p/2}$ & $z$ & $z$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The square-loss logarithm is real on directed graphs. It is already necessary on one transitive tournament, which has independence number one. We place opposite-label pairs at masses $2^{-1},2^{-2},\ldots$. A perturbation at scale $j$ changes the conditional average of a suffix neighborhood. Up to $\Theta(\log m)$ scales can be resolved, the KL cost of each local perturbation is constant, and every scale contributes $\Theta(1/m)$ risk. This gives $\Theta(\log m/m)$ for $k=1$. A disjoint union of $k$ tournaments gives $\Theta(k\log(m/k)/m)$.
+
+Why does the accumulation occur only at $p=2$? Estimating an average from $m\pi$ points has $p$-loss of order $(m\pi)^{-p/2}$, while the directed graph inequality permits order $k\pi$ test mass at neighborhood mass $\pi$. Their product is $k m^{-p/2}\pi^{1-p/2}$. Large neighborhoods dominate below $p=2$, small neighborhoods dominate above $p=2$, and every logarithmic scale contributes equally exactly at $p=2$.
+
+Undirected graphs behave differently. A weighted Caro--Wei inequality controls the integral of the inverse neighborhood mass directly. It removes the scale sum at $p=2$ and yields the parametric $k/m$ rate. Direction is therefore not a cosmetic modeling choice. A one-way similarity or access relation can be statistically harder than its symmetrization even when both graphs have the same independent sets.
+
+\paragraph{Contributions.} Our results provide: (i) exact expected-risk and constant-confidence minimax rates for every fixed power $p>0$, (ii) the first matching square-loss lower bound for the conditional-average characterization, improving the previous $k/(\varepsilon\log k)$ term to $k\log(1/\varepsilon)/\varepsilon$, (iii) an exact directed-versus-undirected separation, and (iv) an occupancy principle that isolates the interaction between graph orientation, neighborhood mass, and loss curvature. The lower bounds hold for a known singleton concept. They are distribution-estimation barriers rather than classification barriers.
+
+\section{Setup and minimax envelopes}
+\label{sec:setup}
+
+Let $G=(X,E)$ be a measurable simple directed graph. Anti-parallel edges are allowed. Its closed out-neighborhood is $N[x]=\{x\}\cup\{y:(x,y)\in E\}$. A set is independent if no edge in either direction joins two of its distinct vertices. We use the definitions of \citet{bressan2026conditional}:
+\begin{align*}
+\alpha_1(G,\cclass)&=\sup\{|I|:I\text{ is independent and shattered by }\cclass\},\\
+X_c&=\{x:\exists y\in N[x]\text{ with }c(y)\ne c(x)\},\\
+\alpha_2(G,\cclass)&=\sup_{c\in\cclass}\alpha(G[X_c]).
+\end{align*}
+The learner observes $S=((X_i,c(X_i)))_{i=1}^m$ with $X_i$ i.i.d. from $D$. We use the convention in the original model for zero-mass monochromatic neighborhoods, where the target is the point label. This convention is immaterial to the bichromatic bounds.
+
+For a pair $(G,\cclass)$, let $R_{m,p}(G,\cclass)$ be the minimax expected $p$-risk, with the infimum over all randomized learning rules and the supremum over $D$ and $c\in\cclass$. To state what the two dimensions determine, define the directed envelope
+\[
+\mathfrak R^{\rm dir}_{m,p}(d,k)=
+\sup_{\substack{G,\cclass:\ \alpha_1(G,\cclass)\leq d\\\alpha_2(G,\cclass)\leq k}}
+R_{m,p}(G,\cclass),
+\]
+and define $\mathfrak R^{\rm und}_{m,p}(d,k)$ by restricting $G$ to undirected graphs. This is a worst-case characterization by $(d,k)$, not an assertion that every graph with the same pair is equally difficult.
+
+For $z\geq0$, define the capped phase functions
+\begin{align}
+\phase_p^{\rm dir}(z)&=
+\begin{cases}
+\min\{1,z^{p/2}\},&0<p<2,\\
+\min\{1,z\{1+\log_+(1/z)\}\},&p=2,\\
+\min\{1,z\},&p>2,
+\end{cases} \label{eq:dirphase}\\
+\phase_p^{\rm und}(z)&=\min\{1,z^{\min\{p/2,1\}}\}. \label{eq:undphase}
+\end{align}
+Here $\log_+(u)=\max\{0,\log u\}$. Our main theorem is the following.
+
+\begin{theorem}[Complete loss and direction phase diagram]
+\label{thm:main}
+Fix $p>0$. There are constants $0<c_p<C_p<\infty$ such that for all $m\geq1$ and integers $d,k\geq0$,
+\begin{align}
+c_p\min\left\{1,\frac dm+\phase_p^{\rm dir}\!\left(\frac km\right)\right\}
+&\leq \mathfrak R^{\rm dir}_{m,p}(d,k)
+\leq C_p\min\left\{1,\frac dm+\phase_p^{\rm dir}\!\left(\frac km\right)\right\}, \label{eq:main-dir}\\
+c_p\min\left\{1,\frac dm+\phase_p^{\rm und}\!\left(\frac km\right)\right\}
+&\leq \mathfrak R^{\rm und}_{m,p}(d,k)
+\leq C_p\min\left\{1,\frac dm+\phase_p^{\rm und}\!\left(\frac km\right)\right\}. \label{eq:main-und}
+\end{align}
+The same orders hold for the smallest risk achieved with any fixed success probability strictly larger than one half, with constants also allowed to depend on that probability.
+\end{theorem}
+
+\begin{corollary}[A fixed-graph direction gap]
+\label{cor:fixed-gap}
+There are one fixed countable transitive tournament $T$ and one known singleton concept $\{c\}$ such that
+\[
+R_{m,2}(T,\{c\})\asymp\frac{1+\log m}{m}.
+\]
+If every edge of $T$ is made anti-parallel, producing its undirected symmetrization $T^{\rm sym}$ without changing adjacency, then
+\[
+R_{m,2}(T^{\rm sym},\{c\})\asymp\frac1m.
+\]
+\end{corollary}
+
+Inverting Theorem~\ref{thm:main} gives the exact constant-confidence sample complexity.
+
+\begin{corollary}[Sample complexity]
+\label{cor:sample}
+For $\varepsilon$ below a numerical constant, the directed sample complexity is
+\[
+\Theta_p\left(
+\begin{cases}
+d/\varepsilon+k/\varepsilon^{2/p},&0<p<2,\\
+\{d+k\log(1/\varepsilon)\}/\varepsilon,&p=2,\\
+(d+k)/\varepsilon,&p>2.
+\end{cases}\right).
+\]
+For undirected graphs it is $\Theta_p(d/\varepsilon+k/\varepsilon^{2/p})$ when $p<2$ and $\Theta_p((d+k)/\varepsilon)$ when $p\geq2$.
+\end{corollary}
+
+\section{The occupancy principle}
+\label{sec:occupancy}
+
+The rate is governed by how much test mass can sit at each effective sample size. For a fixed concept $c$, distribution $D$, and exponent $r>0$, define
+\begin{equation}
+\gprof_{m,r}(G,c,D)=\int_{X_c}\min\{1,(m\pi_x)^{-r}\}\,dD(x),
+\qquad \pi_x=D(N[x]). \label{eq:profile}
+\end{equation}
+This functional is instance-dependent. It can be much smaller than a worst-case dimension bound. Its extremal behavior explains the complete phase diagram.
+
+\begin{theorem}[Directed and undirected occupancy]
+\label{thm:occupancy}
+Fix $r>0$ and $k\geq1$. Uniformly over measurable $(G,c,D)$ satisfying $\alpha(G[X_c])\leq k$,
+\begin{equation}
+\sup \gprof_{m,r}(G,c,D)\asymp_r
+\begin{cases}
+\min\{1,(k/m)^r\},&0<r<1,\\
+\min\{1,(k/m)(1+\log_+(m/k))\},&r=1,\\
+\min\{1,k/m\},&r>1.
+\end{cases} \label{eq:occ-dir}
+\end{equation}
+If $G$ is undirected, the supremum is $\asymp_r\min\{1,(k/m)^{\min\{r,1\}}\}$.
+\end{theorem}
+
+The directed upper bound starts from the light-neighborhood inequality of \citet{bressan2026conditional}:
+\begin{equation}
+D\{x\in X_c:\pi_x\leq t\}\leq2kt. \label{eq:light}
+\end{equation}
+For $m\geq k$, partition neighborhood masses between $1/m$ and $1/k$ into dyadic bins. A bin at mass $t$ contains at most $O(kt)$ test probability by Equation~\eqref{eq:light}, while its loss weight is $O((mt)^{-r})$. Its contribution is therefore
+\begin{equation}
+O\left(km^{-r}t^{1-r}\right). \label{eq:bin}
+\end{equation}
+The largest bin dominates when $r<1$, all bins are equal when $r=1$, and the smallest bin dominates when $r>1$. This proves the three upper orders in Equation~\eqref{eq:occ-dir}.
+
+For undirected graphs there is no need to peel. A weighted Caro--Wei inequality \citep{caro1979new,wei1981lower} gives
+\begin{equation}
+\int_{X_c}\frac{dD(x)}{D(N_{G[X_c]}[x])}\leq\alpha(G[X_c])\leq k. \label{eq:weighted-cw}
+\end{equation}
+Since $D(N[x])\geq D(N_{G[X_c]}[x])$, the same upper bound holds with $\pi_x$ in the denominator. If $r<1$, Jensen's inequality applied to $u^r$ bounds $\int\pi_x^{-r}dD(x)$ by $k^r$. If $r\geq1$, the elementary inequality $\min\{1,u^r\}\leq u$ gives $k/m$. Appendix~\ref{app:occupancy} proves Equation~\eqref{eq:weighted-cw} for general measures using a marked Poisson process.
+
+The directed lower bound in Theorem~\ref{thm:occupancy} uses a transitive tournament with ordered vertices $a_1,b_1,a_2,b_2,\ldots$ and all edges pointing to the right. Give pair $j$ total mass $2^{-j}$ and opposite labels. The closed neighborhood of $a_j$ is a suffix with mass $\Theta(2^{-j})$. Summing Equation~\eqref{eq:profile} over the geometric scales gives exactly the three cases in Equation~\eqref{eq:occ-dir}. For $r=1$, every scale between $1$ and $1/m$ contributes $\Theta(1/m)$. The graph is a tournament, so its independence number is one.
+
+\paragraph{Connection to feedback graphs.} Weighted inverse-neighborhood sums also appear in graph-feedback bandits \citep{alon2017nonstochastic,alon2015beyond}. There, a directed version is naturally controlled by the size of a maximum acyclic set, which can equal the entire vertex set on a transitive tournament. Our statistical functional is integrated over an unknown data distribution and capped by finite-sample occupancy. The analogy explains why independence alone does not collapse directed scales. The matching conditional-average lower bound below is specific to distribution estimation and does not follow from online regret bounds.
+
+\section{From occupancy to learning}
+\label{sec:upper}
+
+We use the learner of \citet{bressan2026conditional}. At query $x$, if the sample contains a point in $N[x]$, return the empirical fraction of positive labels among those points. If no such point exists, apply the one-inclusion predictor to the isolated vertices in the graph induced by the sample and $x$ \citep{haussler1994sphere}. Only the pointwise estimation lemma changes with $p$.
+
+\begin{lemma}[Conditional-mean moment]
+\label{lem:pointwise}
+For every fixed $p>0$, every $x\in X_c$, and every sample size $m$,
+\begin{equation}
+\E_S|h_S(x)-s_{D,c}(x)|^p
+\leq C_p\min\{1,(m\pi_x)^{-p/2}\}. \label{eq:pointwise}
+\end{equation}
+\end{lemma}
+
+To see the rate, let $M_x\sim\operatorname{Bin}(m,\pi_x)$ count sample points in $N[x]$. Conditional on $M_x=M>0$, the prediction is the mean of $M$ independent $[0,1]$ variables with expectation $s_{D,c}(x)$. Standard bounded-sum moment bounds give $C_pM^{-p/2}$ \citep{boucheron2013concentration}. If $m\pi_x$ is at least a constant, a Chernoff bound makes $M_x<m\pi_x/2$ exponentially unlikely. If it is smaller, unit loss suffices. This proves Equation~\eqref{eq:pointwise}, including the event $M_x=0$.
+
+Integrating Lemma~\ref{lem:pointwise} over $X_c$ gives $C_p\gprof_{m,p/2}$. On a globally monochromatic neighborhood, any observed neighbor has the exact target label. If the query is isolated in the sample graph, the one-inclusion leave-one-out argument contributes at most $\alpha_1/(m+1)$. The argument is unchanged for every $p$ because both the target and the one-inclusion output are binary on this part. We obtain an instance-dependent guarantee.
+
+\begin{proposition}[Instance-dependent upper bound]
+\label{prop:instance}
+For every $p>0$,
+\begin{equation}
+\E_S\risk_{p,D,c}(h_S)
+\leq C_p\gprof_{m,p/2}(G,c,D)+\frac{\alpha_1(G,\cclass)}{m+1}. \label{eq:instance}
+\end{equation}
+\end{proposition}
+
+The upper halves of Theorem~\ref{thm:main} follow immediately from Proposition~\ref{prop:instance} and Theorem~\ref{thm:occupancy}. Markov's inequality changes expected risk into any fixed success probability at only a constant-factor cost. The upper bound also clarifies what the dimension envelope hides. A directed graph pays a logarithm only when its data distribution places substantial mass across a full ladder of neighborhood probabilities.
+
+\section{Matching lower bounds}
+\label{sec:lower}
+
+All neighborhood lower bounds use $\cclass=\{c\}$. Thus $\alpha_1=0$, the learner knows every individual label, and only the marginal distribution is unknown. We give the constructions here and defer Assouad calculations to Appendix~\ref{app:lower}.
+
+\subsection{The critical square-loss construction}
+
+Fix $k\geq1$. Let $G$ be the disjoint union of $k$ countably infinite transitive tournaments. Component $r$ has the order
+\[
+a_{r,1},b_{r,1},a_{r,2},b_{r,2},\ldots,
+\]
+with an edge from every earlier vertex to every later vertex. Set $c(a_{r,j})=0$ and $c(b_{r,j})=1$. Every vertex has an opposite-label out-neighbor, and the independence number of each tournament is one. Hence $\alpha_2(G,\{c\})=k$.
+
+Let $w_j=2^{-j}$. Component $r$ has total mass $1/k$, and pair $j$ has mass $w_j/k$. For the first $J$ levels and a sign vector $\theta\in\{-1,+1\}^{kJ}$, define
+\begin{align}
+D_\theta(a_{r,j})&=\frac{w_j}{k}\left(\frac12+\theta_{r,j}\gamma_j\right),&
+D_\theta(b_{r,j})&=\frac{w_j}{k}\left(\frac12-\theta_{r,j}\gamma_j\right). \label{eq:harddist}
+\end{align}
+Later pairs are split evenly. The closed out-neighborhood of $a_{r,j}$ is its suffix and has mass exactly $2w_j/k$. Flipping only $\theta_{r,j}$ changes $s_{D_\theta,c}(a_{r,j})$ by exactly $\gamma_j$.
+
+Choose
+\begin{equation}
+\gamma_j=\eta\sqrt{\frac{k}{mw_j}},
+\qquad
+J=\left\lfloor\log_2\frac{m}{Ck}\right\rfloor, \label{eq:gamma}
+\end{equation}
+where $\eta>0$ is a small constant. Neighboring sign distributions satisfy
+\begin{equation}
+\KL(D_\theta^m\|D_{\theta^{(r,j)}}^m)
+\leq16m\frac{w_j\gamma_j^2}{k}=16\eta^2. \label{eq:kl}
+\end{equation}
+At the same time, an incorrect sign estimate forces squared prediction error at least $\gamma_j^2/4$ at $a_{r,j}$, whose probability is at least $w_j/(4k)$. Every unresolved coordinate therefore costs $\Theta(1/m)$ risk. Assouad's lemma leaves a constant fraction of the $kJ$ signs unresolved, giving
+\begin{equation}
+\inf_{\widehat h}\sup_\theta \E\risk_{2,D_\theta,c}(\widehat h)
+\geq c\frac{k}{m}\left(1+\log_+\frac{m}{k}\right). \label{eq:square-lower}
+\end{equation}
+The same argument controls the Hamming error with constant probability, so Equation~\eqref{eq:square-lower} is a constant-confidence lower bound as well. The graph and concept are fixed for every $m$. Only the adversarial marginal distribution changes, as is standard in minimax analysis.
+
+\subsection{Why other loss exponents do not accumulate scales}
+
+For $0<p<2$, use $k$ disjoint bidirected pairs. Give every pair mass $1/k$ and perturb its positive fraction by $\gamma\asymp\sqrt{k/m}$. Neighboring hypotheses have constant KL, while each sign error costs $\Theta(\gamma^p/k)$. A constant fraction of $k$ errors yields $(k/m)^{p/2}$. This graph is undirected, so the lower bound applies to both graph classes.
+
+For $p>2$, again use $k$ bidirected pairs, now with mass $\Theta(1/m)$ per pair and a constant perturbation of each positive fraction. Each pair receives only a constant expected number of observations. Every unresolved pair costs $\Theta(1/m)$ under any fixed power loss, giving $k/m$. The same rare-pair construction gives the undirected $k/m$ lower bound at $p=2$.
+
+Finally, standard realizable classification on $d$ isolated shattered points gives $d/m$. Taking the harder of the classification and neighborhood families gives their sum up to a factor two. This completes Theorem~\ref{thm:main}.
+
+\section{Implications and limitations}
+\label{sec:discussion}
+
+\paragraph{Orientation is a statistical resource.} Symmetrizing a relation can only add observations to some closed neighborhoods. Theorem~\ref{thm:main} quantifies the maximal benefit. Under square loss it removes a logarithmic factor, while under every other fixed power it leaves the minimax order unchanged. Transitive hierarchies are the extremal directed structures. They model one-way containment, seniority, or access relations in which each query averages over a suffix of the population.
+
+\paragraph{The square loss is genuinely critical.} The phase transition is not caused by a proof technique. It follows from matching upper and lower bounds and from the balance in Equation~\eqref{eq:bin}. For $p<2$, common neighborhoods determine the error. For $p>2$, rare neighborhoods determine it. Square loss is the boundary at which every geometric scale is equally expensive.
+
+\paragraph{Relation to aggregate supervision.} Learning from label proportions observes aggregate labels and predicts individuals, while conditional-average learning observes individual labels and predicts aggregates. The two directions have different information structures. Recent label-proportion work also finds loss-sensitive fast rates through variance control \citep{busa2025proportions}. Our lower bound shows that even fully observed individual labels do not remove distributional uncertainty when the requested aggregates form nested directed neighborhoods.
+
+\paragraph{Confidence.} We determine exact rates for expected risk and for any fixed confidence. The dependence on a vanishing failure probability remains open. Median amplification of the known learner multiplies the structural term by $\log(1/\delta)$, while standard lower bounds provide an additive $\log(1/\delta)/\varepsilon$ term. Closing that separate gap may require a direct concentration analysis of the occupancy-weighted learner.
+
+\paragraph{Scope.} Our upper bounds use bounded scalar labels and power losses. Extensions to vector-valued labels, weighted neighborhoods, and input labels that are themselves aggregates are natural. The occupancy method suggests that the relevant critical exponent will be determined by the local mean-estimation moment of the label space.
+
+\section{Conclusion}
+
+Conditional-average learning has an exact structural rate, and its only logarithmic anomaly is both real and sharply localized. Directed graphs can expose one statistically independent parameter at every neighborhood scale. Undirected graphs collapse those scales through weighted Caro--Wei. The balance between occupancy and estimation makes square loss the unique critical power. This identifies the precise price of direction and closes the square-loss dimension gap left by the original learnability characterization.
+
+\bibliography{references}
+\bibliographystyle{iclr2027_conference}
+
+\appendix
+\input{appendix}
+
+\end{document}

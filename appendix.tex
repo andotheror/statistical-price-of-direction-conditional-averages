@@ -1,0 +1,198 @@
+\section{A moment bound for occupied neighborhoods}
+\label{app:moment}
+
+We first prove Lemma~\ref{lem:pointwise}. We use two elementary facts. If $Y_1,\ldots,Y_n$ are independent random variables in $[0,1]$ with common mean $\mu$, then for every fixed $p>0$,
+\begin{equation}
+\E\left|\frac1n\sum_{i=1}^nY_i-\mu\right|^p\leq C_p n^{-p/2}. \label{eq:bounded-moment}
+\end{equation}
+This follows by integrating Hoeffding's sub-Gaussian tail. Also, if $M\sim\operatorname{Bin}(m,\pi)$ and $\lambda=m\pi$, then
+\begin{equation}
+\Prb(M<\lambda/2)\leq e^{-\lambda/8}. \label{eq:binomial-tail}
+\end{equation}
+
+Fix a bichromatic point $x$ and write $\pi=\pi_x=D(N[x])$. Conditional on $M_x=n>0$, the labels observed in $N[x]$ are independent Bernoulli variables with mean $s_{D,c}(x)$. The learner returns their empirical mean. Conditional on $M_x=0$, both the prediction and target lie in $[0,1]$, so the loss is at most one.
+
+If $\lambda<2$, the right side of Equation~\eqref{eq:pointwise} is a constant after adjusting $C_p$. Suppose $\lambda\geq2$. On $M_x\geq\lambda/2$, Equation~\eqref{eq:bounded-moment} bounds the conditional moment by $C_p\lambda^{-p/2}$. On the complement, unit loss and Equation~\eqref{eq:binomial-tail} apply. Since $e^{-u/8}\leq C_pu^{-p/2}$ for $u\geq2$, we conclude that
+\[
+\E|h_S(x)-s_{D,c}(x)|^p\leq C_p\lambda^{-p/2}.
+\]
+Combining both ranges of $\lambda$ proves Lemma~\ref{lem:pointwise}.
+
+\section{Proof of the occupancy theorem}
+\label{app:occupancy}
+
+\subsection{Directed upper bound}
+
+Fix $c$ and let $H=G[X_c]$. Then $\alpha(H)\leq k$. Lemma 8 of \citet{bressan2026conditional}, applied to $H$ and the restriction of $D$, implies
+\begin{equation}
+F(t):=D\{x\in X_c:D(N_G[x])\leq t\}\leq 2kt. \label{eq:app-light}
+\end{equation}
+The use of $N_G[x]$ rather than $N_H[x]$ can only make the event smaller.
+
+The claim is trivial when $m<4k$, so suppose $m\geq4k$ and write $z=k/m$. The points with $\pi_x\leq1/m$ have total mass at most $2z$. For $j\geq0$, define
+\[
+B_j=\left\{x\in X_c:\frac{2^j}{m}<\pi_x\leq\frac{2^{j+1}}m\right\}.
+\]
+For every $j$ with $2^{j+1}/m\leq1/k$, Equation~\eqref{eq:app-light} and the definition of $\gprof_{m,r}$ give
+\begin{equation}
+\int_{B_j}(m\pi_x)^{-r}dD(x)
+\leq 4z,2^{j(1-r)}. \label{eq:bin-sum}
+\end{equation}
+The remaining points have $\pi_x\geq1/(2k)$ and contribute at most $(2z)^r$. Let $J=\lceil\log_2(m/k)\rceil$. Summing Equation~\eqref{eq:bin-sum} for $0\leq j\leq J$ yields
+\[
+\gprof_{m,r}(G,c,D)\leq C_r
+\begin{cases}
+z^r,&r<1,\\
+z(1+\log(1/z)),&r=1,\\
+z,&r>1.
+\end{cases}
+\]
+Together with the trivial cap at one, this is the directed upper bound.
+
+\subsection{A measure-valued Caro--Wei inequality}
+
+We prove the form needed for the undirected result.
+
+\begin{lemma}[Weighted Caro--Wei]
+\label{lem:weighted-cw}
+Let $H=(V,E)$ be a measurable undirected graph with finite independence number $\alpha(H)$. For every finite measure $\mu$ on $V$,
+\begin{equation}
+\int_V\frac{d\mu(x)}{\mu(N_H[x])}\leq\alpha(H), \label{eq:app-cw}
+\end{equation}
+with the integrand interpreted by monotone approximation on zero-mass neighborhoods.
+\end{lemma}
+
+\begin{proof}
+Fix $t>0$ and draw a Poisson point process on $V\times(0,1)$ with intensity $t\mu(dx)du$. Select an atom $(x,u)$ when there is no other atom $(y,v)$ with $y\in N_H[x]$ and $v<u$. Selected locations form an independent set. Indeed, if selected adjacent locations had marks $u<v$, the lower marked one would prevent selection of the other. Repeated atoms at one location are also handled by the closed neighborhood. Hence the number of selected atoms is at most $\alpha(H)$ almost surely.
+
+By the Campbell and void-probability formulas, its expectation equals
+\begin{align*}
+t\int_V\int_0^1\exp\{-tu\mu(N_H[x])\}\,du\,d\mu(x)
+=\int_V\frac{1-e^{-t\mu(N_H[x])}}{\mu(N_H[x])}\,d\mu(x).
+\end{align*}
+This is at most $\alpha(H)$. The integrand increases to $1/\mu(N_H[x])$ as $t\to\infty$. Monotone convergence proves Equation~\eqref{eq:app-cw}. It also shows that the set of zero-mass neighborhoods has zero $\mu$-measure whenever $\alpha(H)<\infty$.
+\end{proof}
+
+For $H=G[X_c]$, take $\mu$ to be the restriction of $D$ to $X_c$. Since
+\[
+\pi_x=D(N_G[x])\geq D(N_H[x])=\mu(N_H[x]),
+\]
+Lemma~\ref{lem:weighted-cw} gives
+\begin{equation}
+\int_{X_c}\pi_x^{-1}dD(x)\leq k. \label{eq:inverse-mass}
+\end{equation}
+When $0<r<1$, concavity and Equation~\eqref{eq:inverse-mass} imply
+\[
+\int_{X_c}\pi_x^{-r}dD(x)
+\leq D(X_c)^{1-r}\left(\int_{X_c}\pi_x^{-1}dD(x)\right)^r
+\leq k^r.
+\]
+Therefore $\gprof_{m,r}\leq(k/m)^r$. When $r\geq1$, use $\min\{1,u^r\}\leq u$ with $u=(m\pi_x)^{-1}$ to get $\gprof_{m,r}\leq k/m$. The cap at one completes the undirected upper bound.
+
+\subsection{Matching occupancy examples}
+
+For the directed example, take $k$ disjoint transitive tournaments. In each component order the vertices as $a_1,b_1,a_2,b_2,\ldots$, direct every edge to the right, and assign pair $j$ total conditional mass $w_j=2^{-j}$. Split each pair evenly and give its two vertices opposite labels. Every vertex is bichromatic. The closed-neighborhood masses of both vertices in pair $j$ lie between $w_j/(2k)$ and $2w_j/k$. Hence
+\begin{equation}
+\gprof_{m,r}\asymp_r
+\sum_{j\geq1}w_j\min\{1,(mw_j/k)^{-r}\}. \label{eq:geometric-profile}
+\end{equation}
+Splitting the sum at $w_j\asymp k/m$ and evaluating two geometric series gives the three directed orders in Theorem~\ref{thm:occupancy}.
+
+For the undirected lower bound with $r<1$, use $k$ disjoint bidirected edges of equal mass $1/k$. Every neighborhood has mass $1/k$, so the profile is $(k/m)^r$ when $m\geq k$. For $r\geq1$, give each of $k$ bidirected edges mass $1/m$ and put the remaining probability on a monochromatic isolated point. The profile is $k/m$. When $m<k$, equal-mass edges give a constant. This proves every lower bound in Theorem~\ref{thm:occupancy}.
+
+\section{Proof of the learning upper bound}
+\label{app:learning-upper}
+
+We detail the reduction from Proposition~\ref{prop:instance}. Draw $m+1$ labeled examples and choose one uniformly as the test point. This has the same law as an independent size-$m$ training sample and a test point. Partition test points according to whether their full closed neighborhood is bichromatic or monochromatic under $c$.
+
+On the bichromatic region $X_c$, Lemma~\ref{lem:pointwise} and Fubini give at most $C_p\gprof_{m,p/2}(G,c,D)$. On a monochromatic neighborhood, the target equals $c(x)$. If the induced sample graph contains a neighbor of $x$, the empirical average is exactly $c(x)$ and incurs zero loss. Otherwise $x$ belongs to the independent set of isolated vertices in the induced graph. The one-inclusion predictor has average leave-one-out zero-one error at most $\alpha_1/(|I|+1)$ on this set. Its prediction and target are binary, so its $p$-loss equals its zero-one loss. Multiplying by $|I|/(m+1)$ bounds the contribution by $\alpha_1/(m+1)$. This is the decomposition used for square loss by \citet{bressan2026conditional}, and no other step depends on $p$. Summing the two regions proves Proposition~\ref{prop:instance}.
+
+\section{Proofs of the minimax lower bounds}
+\label{app:lower}
+
+We use the following standard consequence of Assouad's argument \citep{tsybakov2009introduction}. Suppose distributions $P_\theta$, indexed by $\theta\in\{-1,+1\}^N$, satisfy
+\begin{equation}
+\max_{\theta,i}\KL(P_\theta\|P_{\theta^{(i)}})\leq\kappa<1/2. \label{eq:assouad-kl}
+\end{equation}
+For any collection of coordinate decisions, averaging over a uniform $\theta$ leaves expected Hamming error at least $c_\kappa N$. This remains true if the decision for coordinate $i$ is given all signs except $\theta_i$.
+
+\subsection{Square loss on directed graphs}
+
+We verify the calculations from Section~\ref{sec:lower}. Let $w_j=2^{-j}$ and use the distribution in Equation~\eqref{eq:harddist}, with all pairs after $J$ split evenly. The probabilities sum to one because $\sum_{j\geq1}w_j=1$ within every component. The suffix beginning at $a_{r,j}$ has mass
+\begin{equation}
+D_\theta(N[a_{r,j}])=\frac1k\sum_{\ell\geq j}w_\ell=\frac{2w_j}{k}. \label{eq:suffixmass}
+\end{equation}
+Only the positive mass at $b_{r,j}$ changes when coordinate $(r,j)$ is flipped. The change is $2w_j\gamma_j/k$. Dividing by Equation~\eqref{eq:suffixmass} shows that the two conditional averages at $a_{r,j}$ differ by exactly $\gamma_j$.
+
+For $0<\gamma_j\leq1/4$, the one-sample KL divergence between neighboring signs is
+\begin{align}
+\KL(D_\theta\|D_{\theta^{(r,j)}})
+&=\frac{2w_j\gamma_j}{k}
+\log\frac{1/2+\gamma_j}{1/2-\gamma_j}
+\leq\frac{16w_j\gamma_j^2}{k}. \label{eq:exact-kl}
+\end{align}
+Choose $\gamma_j=\eta\sqrt{k/(mw_j)}$ and retain $J=\lfloor\log_2(m/(Ck))\rfloor$ levels. Taking $C$ large ensures $\gamma_j\leq1/4$. Taking $\eta$ small makes the product KL in Equation~\eqref{eq:assouad-kl} a fixed small constant.
+
+For coordinate $i=(r,j)$, imagine an oracle that knows $\theta_{-i}$ and compares $h(a_{r,j})$ with the midpoint of the two possible target values. A wrong decision means that the squared error at $a_{r,j}$ is at least $\gamma_j^2/4$. Also
+\[
+D_\theta(a_{r,j})\geq\frac{w_j}{4k}.
+\]
+Thus every wrong coordinate contributes at least
+\begin{equation}
+\frac{w_j\gamma_j^2}{16k}=\frac{\eta^2}{16m} \label{eq:per-coordinate}
+\end{equation}
+to integrated square loss. Assouad and Equation~\eqref{eq:per-coordinate} give $c kJ/m$. If $m<Ck$, one level with a constant perturbation gives constant risk. This proves the directed square-loss lower bound with the cap at one.
+
+Taking $k=1$ proves the lower half of Corollary~\ref{cor:fixed-gap} on one fixed countable tournament, because the graph and alternating concept above do not depend on $m$. Its symmetrization is a complete graph. Every closed neighborhood is then the full domain, so learning reduces to estimating the mean of a known binary function. The empirical mean has square risk at most $1/(4m)$. Two distributions supported on one opposite-label pair, with positive probabilities $1/2\pm c/\sqrt m$, give the matching $c'/m$ lower bound by the same two-point KL argument.
+
+\subsection{Subcritical powers}
+
+Let $0<p<2$. Use $k$ disjoint bidirected edges $(a_r,b_r)$ with labels zero and one. Define
+\[
+D_\theta(a_r)=\frac1k\left(\frac12+\theta_r\gamma\right),
+\qquad
+D_\theta(b_r)=\frac1k\left(\frac12-\theta_r\gamma\right),
+\qquad
+\gamma=\eta\sqrt{\frac{k}{m}}.
+\]
+Both vertices in edge $r$ have target $1/2-\theta_r\gamma$. The product KL between neighboring signs is at most $16m\gamma^2/k=16\eta^2$. A midpoint error at $a_r$ forces pointwise $p$-loss at least $\gamma^p$, and $D_\theta(a_r)\geq1/(4k)$. Assouad therefore gives
+\[
+c k\frac{\gamma^p}{k}=c\left(\frac{k}{m}\right)^{p/2}.
+\]
+When $m<Ck$, take a constant $\gamma$ to obtain constant risk. The graph is undirected, so this lower bound applies to both envelopes.
+
+\subsection{Supercritical powers and undirected square loss}
+
+Let $p\geq2$. For $m\geq Ck$, use $k$ disjoint bidirected edges and one isolated point $z$. Give each edge total mass $\lambda/m$, where $\lambda>0$ is a small fixed constant, and put the remaining mass on $z$. Within edge $r$, set
+\[
+D_\theta(a_r)=\frac\lambda m\left(\frac12+\theta_r\gamma\right),
+\qquad
+D_\theta(b_r)=\frac\lambda m\left(\frac12-\theta_r\gamma\right)
+\]
+for a small fixed $\gamma>0$. The $m$-sample KL between neighboring signs is at most $16\lambda\gamma^2$. A sign error forces constant pointwise $p$-loss and occurs on mass at least $c/m$. Assouad gives $ck/m$. For $m<Ck$, equal-mass edges and a constant perturbation give constant risk. This proves the $k/m$ lower bound for every $p>2$ on both graph classes and for $p=2$ on undirected graphs.
+
+\subsection{The classification term}
+
+Take an edgeless graph on an independent set of $d$ points and a concept class that shatters it. Conditional averages are then individual labels. The standard realizable PAC lower bound gives $c\min\{1,d/m\}$ under zero-one loss. Thresholding a $[0,1]$ prediction at $1/2$ shows that an incorrect binary decision forces $p$-loss at least $2^{-p}$, so the same order holds for every fixed $p>0$. Since the supremum defining the minimax envelope is at least the maximum of the classification and neighborhood lower bounds, it is at least half their capped sum. This completes the expected-risk lower bounds.
+
+\section{Constant confidence and inversion}
+\label{app:confidence}
+
+The expected upper bounds imply constant-confidence upper bounds by Markov's inequality. We record why the lower constructions also hold with constant probability. Under the uniform hypercube prior, let $H$ be the number of coordinate midpoint decisions that are wrong. By taking the neighboring KL constant small enough, Assouad gives $\E H\geq cN$ for any fixed $c<1/2$, while $0\leq H\leq N$. For every $a<c$,
+\begin{equation}
+\Prb(H\geq aN)\geq\frac{c-a}{1-a}. \label{eq:hamming-prob}
+\end{equation}
+In each construction, every wrong coordinate contributes the same order to integrated risk: $1/m$ in the square tournament and rare-pair families, and $\gamma^p/k$ in the equal-pair family. Therefore Equation~\eqref{eq:hamming-prob} forces the stated minimax risk with a numerical probability. Averaging over the prior supplies one fixed $\theta$ with this failure probability. Given any fixed failure probability below one half, first choose $c$ sufficiently close to $1/2$ and then choose $a>0$ sufficiently small so that the right side of Equation~\eqref{eq:hamming-prob} exceeds it. This proves the claim for every fixed success probability above one half, with a confidence-dependent constant in the risk.
+
+For completeness, we invert the square-loss directed rate. Let $L=1+\log(1/\varepsilon)$ and take $m=C(d+kL)/\varepsilon$. Then $d/m\leq\varepsilon/C$. If $d\leq kL$, we have $m/k\leq C'L/\varepsilon$, so $(k/m)(1+\log(m/k))\leq C''\varepsilon$ after increasing $C$. If $d>kL$, write $u=d/k$. Then
+\[
+\frac{k}{m}\left(1+\log\frac{m}{k}\right)
+\leq\frac{\varepsilon}{Cu}\{1+\log(Cu/\varepsilon)\}
+\leq C'\varepsilon,
+\]
+using $(\log u)/u\leq1/e$ and $L/u<1$. The converse follows from the separate $d/m$ and $k\log(m/k)/m$ lower bounds. The other rows invert directly, proving Corollary~\ref{cor:sample}.
+
+\section{Verification artifact}
+\label{app:artifact}
+
+The supplementary script \texttt{verify\_hard\_family.py} constructs finite truncations of the transitive-tournament family. It checks normalization, exact conditional-average shifts, neighboring KL bounds, bichromaticity, and the three dyadic occupancy regimes for representative powers. The script is a diagnostic for the displayed algebra. The theorems rely on the analytic proofs above.
