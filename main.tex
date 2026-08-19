@@ -34,16 +34,13 @@
 \maketitle
 
 \begin{abstract}
-Learning conditional averages asks for the average binary label in the neighborhood of every test point. A recent combinatorial characterization proves learnability on arbitrary directed neighborhood graphs, but its quantitative lower and upper bounds differ by logarithmic factors. We determine the exact minimax rates and expose an unexpected critical phenomenon. Let $d$ be the largest shattered independent set and let $k$ be the largest bichromatic independent set, the two parameters in the characterization. Under the power loss $|\widehat s-s|^p$ and any fixed confidence, the optimal sample complexity on directed graphs is
-\[
-\Theta_p\!\left(\frac d\varepsilon+
+Learning conditional averages asks for the average binary label in the neighborhood of every test point. A recent combinatorial characterization proves learnability on arbitrary directed neighborhood graphs, but its quantitative lower and upper bounds differ by logarithmic factors. We determine the exact minimax rates and expose an unexpected critical phenomenon. Let $d$ be the largest shattered independent set and let $k$ be the largest bichromatic independent set, the two parameters in the characterization. Under the power loss $|\widehat s-s|^p$ and any fixed confidence, the optimal sample complexity on directed graphs is \[ \Theta_p\!\left(\frac d\varepsilon+
 \begin{cases}
 k\varepsilon^{-2/p},&0<p<2,\\
 k\varepsilon^{-1}\log(1/\varepsilon),&p=2,\\
 k\varepsilon^{-1},&p>2.
 \end{cases}\right).
-\]
-On undirected graphs the logarithm at $p=2$ disappears, while every other graph-class minimax rate is unchanged. Thus square loss is the unique exponent at which direction changes the worst-case order characterized by $(d,k)$. The upper bounds follow from a sharp occupancy functional. Directed light-neighborhood inequalities produce a harmonic sum only at the critical exponent, while a weighted Caro--Wei argument collapses all scales in the undirected case. For the converse, a fixed countable transitive tournament with geometrically weighted opposite-label pairs carries one hard parameter at every resolvable scale. Each scale contributes order $1/m$ squared risk even though the graph has independence number one. Disjoint unions give the full $k\log(m/k)/m$ lower bound. The construction uses a known singleton concept, so the logarithm is caused entirely by estimating the marginal distribution. The results close the quantitative gap for square loss and give a complete loss-dependent phase diagram for conditional-average learning.
+\] On undirected graphs the logarithm at $p=2$ disappears, while every other graph-class minimax rate is unchanged. Thus square loss is the unique exponent at which direction changes the worst-case order characterized by $(d,k)$. The upper bounds follow from a sharp occupancy functional. Directed light-neighborhood inequalities produce a harmonic sum only at the critical exponent, while a weighted Caro--Wei argument collapses all scales in the undirected case. For the converse, a fixed countable transitive tournament with geometrically weighted opposite-label pairs carries one hard parameter at every resolvable scale. Each scale contributes order $1/m$ squared risk even though the graph has independence number one. Disjoint unions give the full $k\log(m/k)/m$ lower bound. The construction uses a known singleton concept, so the logarithm is caused entirely by estimating the marginal distribution. The results close the quantitative gap for square loss and give a complete loss-dependent phase diagram for conditional-average learning.
 \end{abstract}
 
 \section{Introduction}
@@ -66,11 +63,7 @@ This leaves even the role of the logarithm unresolved. Is dyadic peeling in the 
 
 The same work notes that its learner can be adapted to absolute loss by replacing the local mean-estimation lemma. It does not derive sharp $\alpha_2$ dependence for general losses, matching lower bounds, or a directed-versus-undirected comparison. Those questions cannot be answered by a mechanical change of the pointwise moment, because the moment must then be integrated over all neighborhood masses. This integration is where the critical exponent and orientation gap arise.
 
-We show that the answer depends on direction and, more surprisingly, on the loss exponent. Write $d=\alpha_1$ and $k=\alpha_2$. For $p>0$, evaluate a predictor $h:X\to[0,1]$ by
-\[
-\risk_{p,D,c}(h)=\E_{X\sim D}|h(X)-s_{D,c}(X)|^p.
-\]
-Table~\ref{tab:phase} gives the neighborhood part of the exact minimax risk after $m$ samples. The independent classification contribution is $d/m$ in every cell. We write $z=k/m\leq1$ and suppress constants depending only on $p$.
+We show that the answer depends on direction and, more surprisingly, on the loss exponent. Write $d=\alpha_1$ and $k=\alpha_2$. For $p>0$, evaluate a predictor $h:X\to[0,1]$ by \[ \risk_{p,D,c}(h)=\E_{X\sim D}|h(X)-s_{D,c}(X)|^p. \] Table~\ref{tab:phase} gives the neighborhood part of the exact minimax risk after $m$ samples. The independent classification contribution is $d/m$ in every cell. We write $z=k/m\leq1$ and suppress constants depending only on $p$.
 
 \begin{table}[t]
 \centering
@@ -105,13 +98,7 @@ X_c&=\{x:\exists y\in N[x]\text{ with }c(y)\ne c(x)\},\\
 \end{align*}
 The learner observes $S=((X_i,c(X_i)))_{i=1}^m$ with $X_i$ i.i.d. from $D$. We use the convention in the original model for zero-mass monochromatic neighborhoods, where the target is the point label. This convention is immaterial to the bichromatic bounds.
 
-For a pair $(G,\cclass)$, let $R_{m,p}(G,\cclass)$ be the minimax expected $p$-risk, with the infimum over all randomized learning rules and the supremum over $D$ and $c\in\cclass$. To state what the two dimensions determine, define the directed envelope
-\[
-\mathfrak R^{\rm dir}_{m,p}(d,k)=
-\sup_{\substack{G,\cclass:\ \alpha_1(G,\cclass)\leq d\\\alpha_2(G,\cclass)\leq k}}
-R_{m,p}(G,\cclass),
-\]
-and define $\mathfrak R^{\rm und}_{m,p}(d,k)$ by restricting $G$ to undirected graphs. This is a worst-case characterization by $(d,k)$, not an assertion that every graph with the same pair is equally difficult.
+For a pair $(G,\cclass)$, let $R_{m,p}(G,\cclass)$ be the minimax expected $p$-risk, with the infimum over all randomized learning rules and the supremum over $D$ and $c\in\cclass$. To state what the two dimensions determine, define the directed envelope \[ \mathfrak R^{\rm dir}_{m,p}(d,k)= \sup_{\substack{G,\cclass:\ \alpha_1(G,\cclass)\leq d\\\alpha_2(G,\cclass)\leq k}} R_{m,p}(G,\cclass), \] and define $\mathfrak R^{\rm und}_{m,p}(d,k)$ by restricting $G$ to undirected graphs. This is a worst-case characterization by $(d,k)$, not an assertion that every graph with the same pair is equally difficult.
 
 For $z\geq0$, define the capped phase functions
 \begin{align}
@@ -141,30 +128,20 @@ The same orders hold for the smallest risk achieved with any fixed success proba
 
 \begin{corollary}[A fixed-graph direction gap]
 \label{cor:fixed-gap}
-There are one fixed countable transitive tournament $T$ and one known singleton concept $\{c\}$ such that
-\[
-R_{m,2}(T,\{c\})\asymp\frac{1+\log m}{m}.
-\]
-If every edge of $T$ is made anti-parallel, producing its undirected symmetrization $T^{\rm sym}$ without changing adjacency, then
-\[
-R_{m,2}(T^{\rm sym},\{c\})\asymp\frac1m.
-\]
+There are one fixed countable transitive tournament $T$ and one known singleton concept $\{c\}$ such that \[ R_{m,2}(T,\{c\})\asymp\frac{1+\log m}{m}. \] If every edge of $T$ is made anti-parallel, producing its undirected symmetrization $T^{\rm sym}$ without changing adjacency, then \[ R_{m,2}(T^{\rm sym},\{c\})\asymp\frac1m. \]
 \end{corollary}
 
 Inverting Theorem~\ref{thm:main} gives the exact constant-confidence sample complexity.
 
 \begin{corollary}[Sample complexity]
 \label{cor:sample}
-For $\varepsilon$ below a numerical constant, the directed sample complexity is
-\[
-\Theta_p\left(
+For $\varepsilon$ below a numerical constant, the directed sample complexity is \[ \Theta_p\left(
 \begin{cases}
 d/\varepsilon+k/\varepsilon^{2/p},&0<p<2,\\
 \{d+k\log(1/\varepsilon)\}/\varepsilon,&p=2,\\
 (d+k)/\varepsilon,&p>2.
 \end{cases}\right).
-\]
-For undirected graphs it is $\Theta_p(d/\varepsilon+k/\varepsilon^{2/p})$ when $p<2$ and $\Theta_p((d+k)/\varepsilon)$ when $p\geq2$.
+\] For undirected graphs it is $\Theta_p(d/\varepsilon+k/\varepsilon^{2/p})$ when $p<2$ and $\Theta_p((d+k)/\varepsilon)$ when $p\geq2$.
 \end{corollary}
 
 \section{The occupancy principle}
@@ -247,11 +224,7 @@ All neighborhood lower bounds use $\cclass=\{c\}$. Thus $\alpha_1=0$, the learne
 
 \subsection{The critical square-loss construction}
 
-Fix $k\geq1$. Let $G$ be the disjoint union of $k$ countably infinite transitive tournaments. Component $r$ has the order
-\[
-a_{r,1},b_{r,1},a_{r,2},b_{r,2},\ldots,
-\]
-with an edge from every earlier vertex to every later vertex. Set $c(a_{r,j})=0$ and $c(b_{r,j})=1$. Every vertex has an opposite-label out-neighbor, and the independence number of each tournament is one. Hence $\alpha_2(G,\{c\})=k$.
+Fix $k\geq1$. Let $G$ be the disjoint union of $k$ countably infinite transitive tournaments. Component $r$ has the order \[ a_{r,1},b_{r,1},a_{r,2},b_{r,2},\ldots, \] with an edge from every earlier vertex to every later vertex. Set $c(a_{r,j})=0$ and $c(b_{r,j})=1$. Every vertex has an opposite-label out-neighbor, and the independence number of each tournament is one. Hence $\alpha_2(G,\{c\})=k$.
 
 Let $w_j=2^{-j}$. Component $r$ has total mass $1/k$, and pair $j$ has mass $w_j/k$. For the first $J$ levels and a sign vector $\theta\in\{-1,+1\}^{kJ}$, define
 \begin{align}
