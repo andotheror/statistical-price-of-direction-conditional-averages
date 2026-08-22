@@ -19,7 +19,7 @@ Our results provide: (i) exact expected-risk and constant-confidence minimax rat
 
 ## Keywords
 
-conditional averages, directed neighborhood graphs, minimax rates, sample complexity, shattering, phase transition
+statistical, price, direction, learning, conditional, averages, asks, average, binary
 
 ## Files
 
